@@ -14,7 +14,6 @@
 
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -37,9 +36,47 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         let team_2_score: u8 = v[3].parse().unwrap();
         // TODO: Populate the scores table with details extracted from the
         // current line. Keep in mind that goals scored by team_1
-        // will be number of goals conceded from team_2, and similarly
+        // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+    
+        let mut team = scores.get(&team_1_name);
+        match team{
+            None=>{
+                scores.insert(team_1_name.clone(), Team{
+                    name: team_1_name,
+                    goals_scored:team_1_score,
+                    goals_conceded:team_2_score
+                });
+            }
+            Some(i)=>{
+                let toInsert = Team{
+                    goals_scored: i.goals_scored+ team_1_score,
+                    goals_conceded : i.goals_conceded + team_2_score,
+                    name : team_1_name.clone()
+                };
+                scores.insert(team_1_name,toInsert);
+            }
+        }
+        team = scores.get(&team_2_name);
+        match team{
+            None=>{
+                scores.insert(team_2_name.clone(), Team{
+                    name: team_2_name,
+                    goals_scored:team_2_score,
+                    goals_conceded:team_1_score
+                });
+            }
+            Some(i)=>{
+                let toInsert = Team{
+                    goals_scored: i.goals_scored+ team_2_score,
+                    goals_conceded : i.goals_conceded + team_1_score,
+                    name : team_2_name.clone()
+                };
+                scores.insert(team_2_name,toInsert);
+            }
+        }
+    
     }
     scores
 }

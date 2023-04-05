@@ -1,44 +1,47 @@
-// traits1.rs
-// Time to implement some traits!
-//
-// Your task is to implement the trait
-// `AppendBar' for the type `String'.
-//
-// The trait AppendBar has only one function,
-// which appends "Bar" to any object
-// implementing this trait.
-// Execute `rustlings hint traits1` or use the `hint` watch subcommand for a hint.
+// threads1.rs
+// Execute `rustlings hint threads1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+// This program spawns multiple threads that each run for at least 250ms,
+// and each thread returns how much time they took to complete.
+// The program should wait until all the spawned threads have finished and
+// should collect their return values into a vector.
 
-trait AppendBar {
-    fn append_bar(self) -> Self;
-}
 
-impl AppendBar for String {
-    //Add your code here
-}
+use std::thread;
+use std::time::{Duration, Instant};
 
 fn main() {
-    let s = String::from("Foo");
-    let s = s.append_bar();
-    println!("s: {}", s);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn is_foo_bar() {
-        assert_eq!(String::from("Foo").append_bar(), String::from("FooBar"));
+    let mut handles = vec![];
+    for i in 0..10 {
+        handles.push(thread::spawn(move || {
+            let start = Instant::now();
+            thread::sleep(Duration::from_millis(250));
+            println!("thread {} is complete", i);
+            start.elapsed().as_millis()
+        }));
     }
 
-    #[test]
-    fn is_bar_bar() {
-        assert_eq!(
-            String::from("").append_bar().append_bar(),
-            String::from("BarBar")
-        );
+    let mut results: Vec<u128> = vec![];
+    for handle in handles {
+        // TODO: a struct is returned from thread::spawn, can you use it?
+        let elapsed = handle.join();
+        match elapsed {
+            Ok(i)=>{
+                println!("This thread elapsed in {} ms",i);
+                results.push(i);
+            }
+            _=>{
+
+            }
+        }
+    }
+
+    if results.len() != 10 {
+        panic!("Oh no! All the spawned threads did not finish!");
+    }
+    
+    println!();
+    for (i, result) in results.into_iter().enumerate() {
+        println!("thread {} took {}ms", i, result);
     }
 }
